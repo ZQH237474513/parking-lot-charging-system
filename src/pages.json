@@ -11,12 +11,34 @@
 	"pages": [
 		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/home/home",
+			"style": {
+				"navigationBarTitleText": "新增账单"
+			}
+		},
+		{
 			"path": "pages/goodsList/goodsList",
 			"style": {
-				"navigationBarTitleText": "goodsList"
+				"navigationBarTitleText": "商品列表"
 			}
 		}
 	],
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#3cc51f",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/home/home",
+				"text": "新增账单"
+			},
+			{
+				"pagePath": "pages/goodsList/goodsList",
+				"text": "商品列表"
+			}
+		]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

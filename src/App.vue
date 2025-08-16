@@ -1,15 +1,14 @@
-<script>
-export default {
-  onLaunch: function () {
-    console.log('App Launch')
-  },
-  onShow: function () {
-    console.log('App Show')
-  },
-  onHide: function () {
-    console.log('App Hide')
-  },
-}
+<template></template>
+<script setup>
+import { onMounted } from 'vue';
+import { useApplicationStore } from '@stores';
+
+const { initGoodList } = useApplicationStore();
+onMounted(() => {
+    initGoodList();
+
+})
+
 </script>
 
 <style lang="scss">

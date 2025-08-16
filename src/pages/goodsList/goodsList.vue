@@ -22,29 +22,29 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { getGoodsList } from '../../api/index';
+import { onMounted, ref, } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
+import { useApplicationStore } from '@stores';
 
-const goodsList = ref([]) as any;
+const { goodsList } = useApplicationStore();
+
 const targetList = ref([]) as any;
+targetList.value = goodsList;
 
-onMounted(() => {
-  (async () => {
-    const goodsListRes = await getGoodsList();
-    if (goodsListRes) {
-      goodsList.value = goodsListRes;
-      targetList.value = goodsListRes;
-    }
-  })()
+onLoad((option: any) => {
+  const { type = 'view', id } = option;
+
+  console.log(type);
+
 
 })
 
 const initData = () => {
-  targetList.value = goodsList.value;
+  targetList.value = goodsList;
 }
 
 const clickSearch = (value: string) => {
-  targetList.value = goodsList.value.filter((item: any) => {
+  targetList.value = goodsList.filter((item: any) => {
     return String(item.name).indexOf(value) !== -1
   });
 
