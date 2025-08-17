@@ -10,7 +10,7 @@ export const useApplicationStore = defineStore("application", () => {
 
 	const initGoodList = async () => {
 		const dbGoodsList = await localforage.getItem("goodsList");
-		if (dbGoodsList) {
+		if (dbGoodsList && dbGoodsList?.length) {
 			goodsList.value = dbGoodsList;
 		} else {
 			try {

@@ -1,21 +1,22 @@
-const { VITE_BASIC_API, VITE_APP_URL } = import.meta.env;
+const { VITE_BASIC_API, VITE_APP_URL, DEV } = import.meta.env;
 
 interface request {
-	url : string;
-	method ?: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT" | undefined;
-	data ?: any;
-	header ?: Object;
+	url: string;
+	method?: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT" | undefined;
+	data?: any;
+	header?: Object;
 }
 
 let basicUrl = "";
 const timeout = 5000;
 
-const request = (config : request) => {
+const request = (config: request) => {
 	config.url = `${basicUrl}${config.url}`;
+
 	return new Promise((resolve) => {
 		const { url, method = "GET", data, header } = config;
 		const baiscUrl = `${VITE_APP_URL}${url}`;
-		console.log(baiscUrl)
+		console.log(baiscUrl);
 		uni.request({
 			url: baiscUrl,
 			method,
@@ -30,6 +31,7 @@ const request = (config : request) => {
 						resolve(res.data);
 						return;
 					default:
+						resolve([]);
 						return;
 				}
 			},

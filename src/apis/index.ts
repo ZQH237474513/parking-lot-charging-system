@@ -1,6 +1,6 @@
 import request from "./request";
 
-const { VITE_BASIC_API } = import.meta.env as any;
+const { VITE_BASIC_API, DEV } = import.meta.env as any;
 
 export const getGoodsList = () => {
 	return request({

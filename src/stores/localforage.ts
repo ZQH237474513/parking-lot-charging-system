@@ -1,6 +1,7 @@
 import localforage from "localforage";
 
 const db = function (app: any) {
+	let localStorage = {} as any;
 	localforage.config({
 		driver: [localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE], // 指定使用的存储引擎，例如 localStorage
 		name: "parking-lot-charging-system", // 存储数据库的名称
@@ -8,7 +9,18 @@ const db = function (app: any) {
 		storeName: "keyvaluepairs", // 存储对象的仓库名称
 	});
 
-	app.config.globalProperties.$localforage = localforage;
+	localStorage.getItem = (key: string) => {
+		return JSON.parse(uni.getStorageSync(key) || "null");
+	};
+	localStorage.setItem = (key: string, data: any) => {
+		uni.setStorageSync("goodsList", JSON.stringify(data));
+	};
+
+	// #ifdef H5
+	localStorage = localforage;
+	// #endif
+
+	app.config.globalProperties.$localforage = localStorage;
 };
 
 export default db;
