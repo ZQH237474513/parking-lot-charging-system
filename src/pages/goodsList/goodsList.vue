@@ -15,7 +15,7 @@
 				<view
 					@click="() => handleSelect(item)"
 					v-for="(item, i) in targetList"
-					:id="Number(new Date().valueOf() + i)"
+					:id="item.id"
 					:class="selectedIds.includes(item.id) ? 'goodsItem active' : 'goodsItem'">
 					<up-image
 						:show-loading="true"
@@ -39,7 +39,8 @@
 			<up-button
 				type="primary"
 				shape="circle"
-				text="提交"></up-button>
+				text="提交"
+				@click="handleSubmit"></up-button>
 		</view>
 	</view>
 </template>
@@ -54,6 +55,7 @@ const { goodsList } = useApplicationStore();
 const targetList = ref([]) as any;
 const selectedIds = ref([]) as any; // 选中的ids
 const isSelected = ref(false); // 是否可选中
+
 targetList.value = goodsList;
 
 onLoad((option: any) => {
@@ -98,9 +100,22 @@ const handleSelect = (val: any) => {
 		selectedIds.value.push(val.id);
 	}
 };
+
+const handleSubmit = () => {
+	if (!selectedIds.value.length) {
+		return;
+	}
+	uni.navigateTo({
+		url: `../billDetail/billDetail?ids=${selectedIds.value.join(",")}`,
+	});
+};
 </script>
 
 <style lang="scss" scoped>
+::v-deep .uni-scroll-view-content {
+	margin-bottom: 330px;
+}
+
 .search {
 	position: static;
 	top: 0;
@@ -157,7 +172,7 @@ const handleSelect = (val: any) => {
 	height: 30px;
 	background: transparent;
 	position: fixed;
-	bottom: 100px;
+	bottom: 70px;
 	padding: 0 80px;
 	box-sizing: border-box;
 }

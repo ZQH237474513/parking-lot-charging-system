@@ -15,7 +15,12 @@ const request = (config: request) => {
 
 	return new Promise((resolve) => {
 		const { url, method = "GET", data, header } = config;
-		const baiscUrl = `${VITE_APP_URL}${url}`;
+		let baiscUrl = `${VITE_APP_URL}${url}`;
+		// #ifdef APP
+		if (DEV) {
+			baiscUrl = `https://gitee.com${url}`;
+		}
+		// #endif
 		console.log(baiscUrl);
 		uni.request({
 			url: baiscUrl,

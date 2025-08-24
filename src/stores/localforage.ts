@@ -13,7 +13,7 @@ const db = function (app: any) {
 		return JSON.parse(uni.getStorageSync(key) || "null");
 	};
 	localStorage.setItem = (key: string, data: any) => {
-		uni.setStorageSync("goodsList", JSON.stringify(data));
+		uni.setStorageSync(key, JSON.stringify(data));
 	};
 
 	// #ifdef H5

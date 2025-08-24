@@ -20,5 +20,24 @@ export const useApplicationStore = defineStore("application", () => {
 			} catch (error) {}
 		}
 	};
-	return { initGoodList, goodsList };
+
+	const saveBill = async (data: any) => {
+		let dbGoodsList = await localforage.getItem("billList");
+		if (!dbGoodsList) {
+			dbGoodsList = [data];
+		} else if (Array.isArray(dbGoodsList)) {
+			const isRepeat = dbGoodsList.some((item: any) => {
+				return item.id === data.id;
+			});
+
+			if (isRepeat) {
+				return "repeat";
+			}
+			dbGoodsList.push(data);
+		}
+
+		await localforage.setItem("billList", dbGoodsList);
+		return "success";
+	};
+	return { initGoodList, goodsList, saveBill };
 });

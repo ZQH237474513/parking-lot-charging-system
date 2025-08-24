@@ -21,6 +21,12 @@
 			"style": {
 				"navigationBarTitleText": "商品列表"
 			}
+		},
+		{
+			"path": "pages/billDetail/billDetail",
+			"style": {
+				"navigationBarTitleText": "账单详情"
+			}
 		}
 	],
 	"tabBar": {
