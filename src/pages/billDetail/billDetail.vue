@@ -55,6 +55,12 @@ const totalPrice = computed(() => {
 	}, 0);
 });
 
+const totalProfitPrice = computed(() => {
+	return targetList.value.reduce((total: number, item: any) => {
+		return total + item.price - item.originalPrice;
+	}, 0);
+});
+
 onLoad((option: any) => {
 	const { ids } = option;
 	if (ids) {
@@ -80,6 +86,7 @@ const handleCreateBill = async () => {
 		createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
 		goodsList: JSON.parse(JSON.stringify(targetList.value)),
 		totalPrice: totalPrice.value,
+		totalProfitPrice: totalProfitPrice.value,
 	});
 
 	switch (status) {
