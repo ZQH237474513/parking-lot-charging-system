@@ -30,6 +30,7 @@
 						<text class="price">{{ `价格: ${item.price} 元` }}</text>
 					</view>
 				</view>
+				<view class="fix"></view>
 			</view>
 		</scroll-view>
 
@@ -165,6 +166,9 @@ const handleSubmit = () => {
 	.active {
 		border: 1px solid red;
 	}
+	.fix {
+		height: 300px;
+	}
 }
 
 .bottomSubmit {
@@ -172,7 +176,7 @@ const handleSubmit = () => {
 	height: 30px;
 	background: transparent;
 	position: fixed;
-	bottom: 70px;
+	bottom: 30px;
 	padding: 0 80px;
 	box-sizing: border-box;
 }

@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { getGoodsList } from "@apis";
 import { getCurrentInstanceParams } from "@utils";
+import moment from "moment";
 
 export const useApplicationStore = defineStore("application", () => {
 	const goodsList = ref([]) as any;
@@ -39,5 +40,31 @@ export const useApplicationStore = defineStore("application", () => {
 		await localforage.setItem("billList", dbGoodsList);
 		return "success";
 	};
-	return { initGoodList, goodsList, saveBill };
+
+	const getBillList = async () => {
+		const billList: any = {};
+		for (const item of await localforage.getItem("billList")) {
+			const now = moment(item.createTime, "YYYY年MM月DD日 HH:mm:ss");
+			const year = now.year();
+			const month = now.month() + 1;
+			const date = now.date();
+
+			if (!billList[year]) {
+				billList[year] = {};
+			}
+
+			if (!billList[year][month]) {
+				billList[year][month] = {};
+			}
+
+			if (!billList[year][month][date]) {
+				billList[year][month][date] = [item];
+			} else {
+				billList[year][month][date].push(item);
+			}
+		}
+
+		return billList;
+	};
+	return { initGoodList, goodsList, saveBill, getBillList };
 });

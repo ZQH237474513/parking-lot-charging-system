@@ -27,6 +27,18 @@
 			"style": {
 				"navigationBarTitleText": "账单详情"
 			}
+		},
+		{
+			"path": "pages/billList/billList",
+			"style": {
+				"navigationBarTitleText": "账单列表"
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
 		}
 	],
 	"tabBar": {
@@ -39,9 +51,17 @@
 				"pagePath": "pages/home/home",
 				"text": "新增账单"
 			},
+			// {
+			// 	"pagePath": "pages/goodsList/goodsList",
+			// 	"text": "商品列表"
+			// }
 			{
-				"pagePath": "pages/goodsList/goodsList",
-				"text": "商品列表"
+				"pagePath": "pages/billList/billList",
+				"text": "账单列表"
+			},
+			{
+				"pagePath": "pages/user/user",
+				"text": "我的"
 			}
 		]
 	},
