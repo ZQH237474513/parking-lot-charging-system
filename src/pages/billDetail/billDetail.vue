@@ -9,18 +9,23 @@
 					v-for="(item, i) in targetList"
 					:id="item.id"
 					class="goodsItem">
-					<up-image
-						:show-loading="true"
-						:src="item.imgPath"
-						width="100%"
-						radius="10px"
-						height="150px"
-						lazyLoad></up-image>
+					<view class="left">
+						<up-image
+							:show-loading="true"
+							:src="item.imgPath"
+							width="100%"
+							radius="10px"
+							height="120px"
+							lazyLoad></up-image
+					></view>
+					<view class="middle">
+						<view class="priceName">
+							<text class="name">{{ item.name }}</text>
+							<text class="price">{{ `¥  ${item.price} 元` }}</text>
+						</view></view
+					>
 
-					<view class="priceName">
-						<text class="name">{{ item.name }}</text>
-						<text class="price">{{ `价格: ${item.price} 元` }}</text>
-					</view>
+					<view class="right"><up-number-box v-model="item.num"></up-number-box> </view>
 				</view>
 			</view>
 		</scroll-view>
@@ -36,76 +41,6 @@
 	</view>
 </template>
 
-<script setup lang="ts">
-import { ref, computed } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
-import { useApplicationStore } from "@stores";
-import { v4 as uuidv4 } from "uuid";
-import dayjs from "dayjs";
-
-const targetList = ref([]) as any;
-const billId = ref(uuidv4()) as any;
-const uToastRef = ref(null) as any;
-
-const { goodsList, saveBill } = useApplicationStore();
-
-const totalPrice = computed(() => {
-	return targetList.value.reduce((total: number, item: any) => {
-		return total + item.price;
-	}, 0);
-});
-
-const totalProfitPrice = computed(() => {
-	return targetList.value.reduce((total: number, item: any) => {
-		return total + item.price - item.originalPrice;
-	}, 0);
-});
-
-onLoad((option: any) => {
-	const { ids } = option;
-	if (ids) {
-		targetList.value = goodsList.filter((item: any) => {
-			return ids.includes(item.id);
-		});
-	}
-});
-
-const showToast = (title: string) => {
-	uToastRef.value.show({
-		type: "default",
-		title: "提示",
-		message: title,
-	});
-};
-
-/** 生成账单 */
-const handleCreateBill = async () => {
-	const status = await saveBill({
-		id: billId.value,
-		// createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
-		createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
-		goodsList: JSON.parse(JSON.stringify(targetList.value)),
-		totalPrice: totalPrice.value,
-		totalProfitPrice: totalProfitPrice.value,
-	});
-
-	switch (status) {
-		case "repate":
-			showToast("当前数据已提交,请勿重复提交!");
-			setTimeout(() => uni.switchTab({ url: "../home/home" }), 1e3);
-			break;
-		case "success":
-			showToast("数据提交成功!");
-			setTimeout(() => uni.switchTab({ url: "../home/home" }), 0.5e3);
-			break;
-
-		default:
-			uni.switchTab({ url: "../home/home" });
-			break;
-	}
-};
-</script>
-
 <style scoped lang="scss">
 ::v-deep .uni-scroll-view-content {
 	margin-bottom: 100px;
@@ -113,40 +48,54 @@ const handleCreateBill = async () => {
 .wrapper {
 	.goodsList {
 		height: 100%;
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-		grid-gap: 10px 20px;
+		// display: grid;
+		// grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		// grid-gap: 10px 20px;
 		margin: 5px 10px; // 左右间隙
 
 		.goodsItem {
+			display: flex;
+			// justify-content: space-around;
+			// align-items: center;
 			width: 100%;
-			height: 100%;
+			height: 150px;
 			border-radius: 10px;
 			box-shadow: 1px 1px 5px 0 #808080;
+			margin: 20px 0;
 			max-height: 220px;
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
+			.left {
+				width: 120px;
+				height: 100%;
+				margin: 10px 5px 5px 10px;
+				box-sizing: content-box;
+			}
+			.middle {
+				.priceName {
+					display: flex;
+					flex-direction: column;
+					justify-content: space-around;
+					margin: 20px 0 30px 10px;
+					font-weight: bold;
+					font-size: 20px;
+					.name {
+						margin: 0 0 20px 0px;
+					}
 
-			.priceName {
-				margin: 0 0 15px 0;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-
-				.name {
-					margin-bottom: 5px;
-				}
-
-				.price {
-					color: red;
+					.price {
+						color: red;
+					}
 				}
 			}
+			.right {
+				margin: 20px 0 30px 10px;
+			}
+			// display: flex;
+			// flex-direction: column;
+			// justify-content: space-between;
 
 			img {
 				width: 100%;
-				height: 150px;
+				height: 100px;
 				border-radius: 10px;
 				margin-bottom: 10px;
 			}
@@ -191,3 +140,79 @@ const handleCreateBill = async () => {
 	}
 }
 </style>
+
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import { useApplicationStore } from "@stores";
+import { v4 as uuidv4 } from "uuid";
+import dayjs from "dayjs";
+
+const targetList = ref([]) as any;
+const billId = ref(uuidv4()) as any;
+const uToastRef = ref(null) as any;
+
+const { goodsList, saveBill } = useApplicationStore();
+
+const totalPrice = computed(() => {
+	return targetList.value.reduce((total: number, item: any) => {
+		return total + item.price * item.num;
+	}, 0);
+});
+
+const totalProfitPrice = computed(() => {
+	return targetList.value.reduce((total: number, item: any) => {
+		return total + item.price * item.num - item.originalPrice;
+	}, 0);
+});
+
+onLoad((option: any) => {
+	const { ids } = option;
+	if (ids) {
+		const data: any[] = [];
+		ids.split(",").forEach((id: any) => {
+			const target = goodsList.find((item: any) => {
+				return item.id === id;
+			});
+			target.num = 1;
+			data.push(target);
+		});
+		targetList.value = data;
+	}
+});
+
+const showToast = (title: string) => {
+	uToastRef.value.show({
+		type: "default",
+		title: "提示",
+		message: title,
+	});
+};
+
+/** 生成账单 */
+const handleCreateBill = async () => {
+	const status = await saveBill({
+		id: billId.value,
+		// createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
+		createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
+		goodsList: JSON.parse(JSON.stringify(targetList.value)),
+		totalPrice: totalPrice.value,
+		totalProfitPrice: totalProfitPrice.value,
+	});
+
+	switch (status) {
+		case "repate":
+			showToast("当前数据已提交,请勿重复提交!");
+			setTimeout(() => uni.switchTab({ url: "../home/home" }), 1e3);
+			break;
+		case "success":
+			showToast("数据提交成功!");
+			setTimeout(() => uni.switchTab({ url: "../home/home" }), 0.5e3);
+			break;
+
+		default:
+			uni.switchTab({ url: "../home/home" });
+			break;
+	}
+};
+</script>

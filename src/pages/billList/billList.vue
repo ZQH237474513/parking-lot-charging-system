@@ -21,17 +21,18 @@
 							<up-th width="8%"></up-th>
 							<up-th width="38%">名称</up-th>
 							<up-th>价格</up-th>
-							<!-- <up-th>成本价</up-th> -->
+							<up-th>数量</up-th>
 						</up-tr>
 						<up-tr v-for="(goods, i) in item.goodsList">
 							<up-td width="10%">{{ i + 1 }}</up-td>
 							<up-td width="40%">{{ goods.name }}</up-td>
 							<up-td>{{ `${goods.price} 元 ` }}</up-td>
+							<up-td>{{ goods?.num || 1 }}</up-td>
 							<!-- <up-td>{{ `${goods.originalPrice} 元 ` }}</up-td> -->
 						</up-tr>
 					</up-table>
 				</view>
-				<view class="total">{{ `总价 : ${item.totalPrice} 元` }}</view>
+				<view class="total">{{ `总金额 : ${item.totalPrice} 元` }}</view>
 			</view>
 		</view>
 	</view>
@@ -67,6 +68,7 @@
 import { onMounted, ref } from "vue";
 import { useApplicationStore } from "@stores";
 import moment from "moment";
+import { onLoad } from "@dcloudio/uni-app";
 
 const billList = ref([]) as any;
 const columns = ref([]) as any;
@@ -89,10 +91,18 @@ const changeHandler = (e: any) => {
 const getBillDataList = (keys: any[], data: any) => {
 	const mountList = data[keys[0]][keys[1]];
 	const values = Object.values(JSON.parse(JSON.stringify(mountList)));
-	const allData: any = [];
+	let allData: any = [];
 	for (const item of values) {
 		allData.push(...(item as any));
 	}
+
+	allData = allData.sort((a: any, b: any) => {
+		return (
+			moment(b.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf() -
+			moment(a.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf()
+		);
+	});
+
 	return allData;
 };
 
@@ -104,14 +114,22 @@ const handlerConfirm = (e: any) => {
 	show.value = false;
 };
 
-onMounted(() => {
+onLoad(() => {
 	(async () => {
 		const data = await getBillList();
 		const yearList = Object.keys(data).sort((a: any, b: any) => b - a);
 		const mountList = Object.keys(data[yearList[0]]);
 		columns.value = [yearList, mountList];
 		const curMonth = moment().month() + 1;
-		curMountData.value = getBillDataList([yearList[0], curMonth], data);
+
+		const data1 = getBillDataList([yearList[0], curMonth], data);
+		curMountData.value = data1.sort((a: any, b: any) => {
+			return (
+				moment(b.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf() -
+				moment(a.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf()
+			);
+		});
+
 		billList.value = data;
 	})();
 });

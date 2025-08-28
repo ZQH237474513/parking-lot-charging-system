@@ -35,6 +35,12 @@ export const useApplicationStore = defineStore("application", () => {
 				return "repeat";
 			}
 			dbGoodsList.push(data);
+			dbGoodsList = dbGoodsList.sort((a: any, b: any) => {
+				return (
+					moment(b.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf() -
+					moment(a.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf()
+				);
+			});
 		}
 
 		await localforage.setItem("billList", dbGoodsList);
