@@ -15,17 +15,16 @@
 							:src="item.imgPath"
 							width="100%"
 							radius="10px"
-							height="120px"
+							height="100%"
 							lazyLoad></up-image
 					></view>
-					<view class="middle">
+					<view class="right">
 						<view class="priceName">
 							<text class="name">{{ item.name }}</text>
 							<text class="price">{{ `¥  ${item.price} 元` }}</text>
-						</view></view
-					>
-
-					<view class="right"><up-number-box v-model="item.num"></up-number-box> </view>
+						</view>
+						<up-number-box v-model="item.num"></up-number-box
+					></view>
 				</view>
 			</view>
 		</scroll-view>
@@ -64,17 +63,22 @@
 			margin: 20px 0;
 			max-height: 220px;
 			.left {
-				width: 120px;
-				height: 100%;
+				width: 200px;
+				height: 120px;
 				margin: 10px 5px 5px 10px;
 				box-sizing: content-box;
 			}
-			.middle {
+			.right {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				width: 100%;
+				margin: 20px 20px;
+
 				.priceName {
 					display: flex;
 					flex-direction: column;
-					justify-content: space-around;
-					margin: 20px 0 30px 10px;
+					// justify-content: space-evenly;
 					font-weight: bold;
 					font-size: 20px;
 					.name {
@@ -86,12 +90,6 @@
 					}
 				}
 			}
-			.right {
-				margin: 20px 0 30px 10px;
-			}
-			// display: flex;
-			// flex-direction: column;
-			// justify-content: space-between;
 
 			img {
 				width: 100%;

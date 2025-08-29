@@ -9,7 +9,41 @@
 			@cancel="show = false"></up-picker>
 		<up-button @click="show = true">打开</up-button>
 
-		<view>
+		<view class="billContent">
+			<view
+				class="billCard"
+				@click="isShowTotalDatail = !isShowTotalDatail">
+				<view :style="{ fontSize: '18px' }">
+					<view>
+						当月总金额 :
+						<text :style="{ color: 'red' }">{{ `   ${curMountTotalPrice} 元` }}</text>
+						<!-- <view>
+							当天总金额 :
+							<text :style="{ color: 'red', fontWeight: 'bold' }">{{
+								`   ${curMountTotalPrice} 元`
+							}}</text>
+						</view> -->
+					</view>
+				</view>
+				<view v-if="isShowTotalDatail">
+					<view class="goodsList">{{ `商品列表 : ` }}</view>
+					<up-table fontSize="17px">
+						<up-tr>
+							<up-th width="8%"></up-th>
+							<up-th width="38%">名称</up-th>
+							<up-th>价格</up-th>
+							<up-th>数量</up-th>
+						</up-tr>
+						<up-tr v-for="(goods, i) in statisticsGoodsNumList">
+							<up-td width="10%">{{ i + 1 }}</up-td>
+							<up-td width="40%">{{ goods.name }}</up-td>
+							<up-td>{{ `${goods.price} 元 ` }}</up-td>
+							<up-td>{{ goods?.num || 1 }}</up-td>
+							<!-- <up-td>{{ `${goods.originalPrice} 元 ` }}</up-td> -->
+						</up-tr>
+					</up-table>
+				</view>
+			</view>
 			<view
 				v-for="item in curMountData"
 				class="billCard">
@@ -40,25 +74,30 @@
 
 <style scoped lang="scss">
 .wrapper {
-	.billCard {
-		// min-height: 200px;
-		border-radius: 3%;
-		margin: 20px 10px;
-		padding: 10px 10px;
-		box-shadow: 1px 2px 4px 0px #808080;
-		box-sizing: border-box;
-		font-weight: bold;
-		font-size: 16px;
-		.createTime {
-			margin: 10px 0;
-		}
-		.total {
-			margin: 10px 0;
-			color: red;
-			font-size: 20px;
-		}
-		.goodsList {
-			margin: 10px 0;
+	.billContent {
+		width: 100%;
+		height: 82vh;
+		overflow-y: scroll;
+		.billCard {
+			// min-height: 200px;
+			border-radius: 3%;
+			margin: 20px 10px;
+			padding: 10px 10px;
+			box-shadow: 1px 2px 4px 0px #808080;
+			box-sizing: border-box;
+			font-weight: bold;
+			font-size: 16px;
+			.createTime {
+				margin: 10px 0;
+			}
+			.total {
+				margin: 10px 0;
+				color: red;
+				font-size: 20px;
+			}
+			.goodsList {
+				margin: 10px 0;
+			}
 		}
 	}
 }
@@ -67,6 +106,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useApplicationStore } from "@stores";
+import { getCurMountTotalPrice, getStatisticsGoodsNumList } from "@utils";
 import moment from "moment";
 import { onLoad } from "@dcloudio/uni-app";
 
@@ -75,6 +115,9 @@ const columns = ref([]) as any;
 const show = ref(false);
 const uPickerRef = ref(null) as any;
 const curMountData = ref([]) as any;
+const curMountTotalPrice = ref(0);
+const statisticsGoodsNumList = ref([]) as any;
+const isShowTotalDatail = ref(false);
 
 const { getBillList } = useApplicationStore();
 
@@ -109,8 +152,10 @@ const getBillDataList = (keys: any[], data: any) => {
 const handlerConfirm = (e: any) => {
 	const { value } = e;
 
-	curMountData.value = getBillDataList(value, billList.value);
-
+	const data = getBillDataList(value, billList.value);
+	curMountData.value = data;
+	curMountTotalPrice.value = getCurMountTotalPrice(data);
+	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
 	show.value = false;
 };
 
@@ -131,6 +176,8 @@ onLoad(() => {
 		});
 
 		billList.value = data;
+		curMountTotalPrice.value = getCurMountTotalPrice(data1);
+		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data1);
 	})();
 });
 </script>
