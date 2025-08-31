@@ -1,22 +1,15 @@
 <template>
 	<view class="wrapper">
-		<up-picker
-			:show="show"
-			:columns="columns"
-			ref="uPickerRef"
-			@change="changeHandler"
-			@confirm="handlerConfirm"
+		<up-picker :show="show" :columns="columns" ref="uPickerRef" @change="changeHandler" @confirm="handlerConfirm"
 			@cancel="show = false"></up-picker>
 		<up-button @click="show = true">打开</up-button>
 
 		<view class="billContent">
-			<view
-				class="billCard"
-				@click="isShowTotalDatail = !isShowTotalDatail">
+			<view class="billCard" @click="isShowTotalDatail = !isShowTotalDatail">
 				<view :style="{ fontSize: '18px' }">
 					<view>
 						当月总金额 :
-						<text :style="{ color: 'red' }">{{ `   ${curMountTotalPrice} 元` }}</text>
+						<text :style="{ color: 'red' }">{{ ` ${curMountTotalPrice} 元` }}</text>
 						<!-- <view>
 							当天总金额 :
 							<text :style="{ color: 'red', fontWeight: 'bold' }">{{
@@ -44,9 +37,7 @@
 					</up-table>
 				</view>
 			</view>
-			<view
-				v-for="item in curMountData"
-				class="billCard">
+			<view v-for="item in curMountData" class="billCard">
 				<view class="createTime">{{ `创建时间 : ${item.createTime}` }}</view>
 				<view>
 					<view class="goodsList">{{ `商品列表 : ` }}</view>
@@ -78,23 +69,27 @@
 		width: 100%;
 		height: 82vh;
 		overflow-y: scroll;
+
 		.billCard {
 			// min-height: 200px;
-			border-radius: 3%;
+			border-radius: 10px;
 			margin: 20px 10px;
 			padding: 10px 10px;
 			box-shadow: 1px 2px 4px 0px #808080;
 			box-sizing: border-box;
 			font-weight: bold;
 			font-size: 16px;
+
 			.createTime {
 				margin: 10px 0;
 			}
+
 			.total {
 				margin: 10px 0;
 				color: red;
 				font-size: 20px;
 			}
+
 			.goodsList {
 				margin: 10px 0;
 			}
@@ -106,8 +101,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useApplicationStore } from "@stores";
-import { getCurMountTotalPrice, getStatisticsGoodsNumList } from "@utils";
-import moment from "moment";
+import { getCurMountTotalPrice, getStatisticsGoodsNumList, getFormatBillList } from "@utils";
 import { onLoad } from "@dcloudio/uni-app";
 
 const billList = ref([]) as any;
@@ -131,28 +125,10 @@ const changeHandler = (e: any) => {
 	}
 };
 
-const getBillDataList = (keys: any[], data: any) => {
-	const mountList = data[keys[0]][keys[1]];
-	const values = Object.values(JSON.parse(JSON.stringify(mountList)));
-	let allData: any = [];
-	for (const item of values) {
-		allData.push(...(item as any));
-	}
-
-	allData = allData.sort((a: any, b: any) => {
-		return (
-			moment(b.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf() -
-			moment(a.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf()
-		);
-	});
-
-	return allData;
-};
-
 const handlerConfirm = (e: any) => {
 	const { value } = e;
-
-	const data = getBillDataList(value, billList.value);
+	const formatData = getFormatBillList(billList.value);
+	const data = formatData.getBillDataList(value, billList.value).billList;
 	curMountData.value = data;
 	curMountTotalPrice.value = getCurMountTotalPrice(data);
 	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
@@ -161,23 +137,14 @@ const handlerConfirm = (e: any) => {
 
 onLoad(() => {
 	(async () => {
-		const data = await getBillList();
-		const yearList = Object.keys(data).sort((a: any, b: any) => b - a);
-		const mountList = Object.keys(data[yearList[0]]);
-		columns.value = [yearList, mountList];
-		const curMonth = moment().month() + 1;
+		const formatData = getFormatBillList(await getBillList());
 
-		const data1 = getBillDataList([yearList[0], curMonth], data);
-		curMountData.value = data1.sort((a: any, b: any) => {
-			return (
-				moment(b.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf() -
-				moment(a.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf()
-			);
-		});
-
-		billList.value = data;
-		curMountTotalPrice.value = getCurMountTotalPrice(data1);
-		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data1);
+		columns.value = formatData.columns;
+		const data = formatData.getBillDataList().billList;
+		curMountData.value = data;
+		billList.value = formatData.metaData;
+		curMountTotalPrice.value = getCurMountTotalPrice(data);
+		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
 	})();
 });
 </script>

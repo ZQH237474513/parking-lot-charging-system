@@ -1,7 +1,12 @@
 <template>
 	<view class="wrapper">
-		<view class="swiper">
-			<up-swiper :list="list1" indicator indicatorMode="dot" circular height="200"></up-swiper>
+		<!-- <view class="swiper">
+			<up-swiper :list="list1" indicator indicatorMode="dot" circular height="200"
+				@monthSwitch="handler"></up-swiper>
+		</view> -->
+		<view>
+			<!-- 插入模式 -->
+			<uni-calendar class="uni-calendar--hook" :selected="calendarData" @monthSwitch="handlerMonthSwitch" />
 		</view>
 		<up-cell-group>
 			<up-cell icon="reload" title="更新数据" @click="() => initGoodList(true)"></up-cell>
@@ -22,9 +27,15 @@
 </style>
 
 <script setup>
-import { reactive } from "vue";
-
+import { reactive, ref } from "vue";
 import { useApplicationStore } from "@stores";
+import moment from "moment";
+import { onLoad } from "@dcloudio/uni-app";
+import { getFormatBillList } from "@utils";
+
+const { getBillList, initGoodList } = useApplicationStore();
+const billList = ref([]);
+const calendarData = ref([]);
 
 const list1 = reactive(
 	new Array(7).fill("").map((item, i) => {
@@ -32,5 +43,23 @@ const list1 = reactive(
 	})
 );
 
-const { initGoodList } = useApplicationStore();
+const handlerMonthSwitch = (v) => {
+	const formatData = getFormatBillList(billList.value);
+	const data = formatData.getBillDataList([v.year, v.month]);
+	calendarData.value = data.calendarData;
+
+}
+
+
+onLoad(() => {
+	(async () => {
+		const formatData = getFormatBillList(await getBillList());
+		billList.value = formatData.metaData;
+		const data = formatData.getBillDataList();
+		calendarData.value = data.calendarData;
+	})()
+
+})
+
+
 </script>

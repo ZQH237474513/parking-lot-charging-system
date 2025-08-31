@@ -1,4 +1,5 @@
 import { getCurrentInstance } from "vue";
+import moment from "moment";
 
 /**
  * 获取vue实例上的自定义参数
@@ -35,4 +36,49 @@ export const getStatisticsGoodsNumList = (data: any[]) => {
 	}
 
 	return goodsList;
+};
+
+/**
+ * 格式化账单数据
+ */
+
+export const getFormatBillList = (data: any[]) => {
+	const yearList: any = Object.keys(data).sort((a: any, b: any) => b - a);
+	const mountList = Object.keys(data[yearList[0]]);
+	const columns = [yearList, mountList];
+	const curYear = moment().year();
+	const curMonth = moment().month() + 1;
+
+	const getBillDataList = ([yearNum, mountNum]: any[] = [curYear, curMonth]) => {
+		const mountList = data[yearNum][mountNum];
+		const values = Object.values(JSON.parse(JSON.stringify(mountList || {})));
+
+		let allData: any = [];
+		for (const item of values) {
+			allData.push(...(item as any));
+		}
+
+		allData = allData.sort((a: any, b: any) => {
+			return (
+				moment(b.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf() -
+				moment(a.createTime, "YYYY年MM月DD日 HH:mm:ss").valueOf()
+			);
+		});
+
+		const calendarData: any[] = [];
+
+		for (const key in mountList) {
+			if (Object.prototype.hasOwnProperty.call(mountList, key)) {
+				const date = `${yearNum}-${mountNum}-${key}`;
+				const totalPrice = mountList[key].reduce((total: number, item: any) => {
+					return total + item.totalPrice;
+				}, 0);
+				calendarData.push({ date, info: `${totalPrice}元` });
+			}
+		}
+
+		return { billList: allData, calendarData };
+	};
+
+	return { columns, metaData: data, getBillDataList };
 };
