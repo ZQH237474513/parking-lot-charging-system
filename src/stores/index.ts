@@ -72,5 +72,20 @@ export const useApplicationStore = defineStore("application", () => {
 
 		return billList;
 	};
-	return { initGoodList, goodsList, saveBill, getBillList };
+
+	const deleteBillData = async (id: string) => {
+		const billList = (await localforage.getItem("billList")) as any[];
+		console.log(billList.length);
+
+		const targetIndex = billList.findIndex((item: any) => {
+			return item.id === id;
+		});
+
+		if (targetIndex !== -1) {
+			billList.splice(targetIndex, 1);
+			console.log(billList.length);
+			await localforage.setItem("billList", billList);
+		}
+	};
+	return { initGoodList, goodsList, saveBill, getBillList, deleteBillData };
 });

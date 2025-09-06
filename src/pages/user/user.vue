@@ -10,7 +10,7 @@
 		</view>
 		<up-cell-group>
 			<up-cell icon="reload" title="更新数据" @click="() => initGoodList(true)"></up-cell>
-			<!-- <up-cell icon="integral-fill" title="会员等级" value="新版本"></up-cell> -->
+			<up-cell icon="integral-fill" title="导出数据" @click="exportData"></up-cell>
 		</up-cell-group>
 	</view>
 </template>
@@ -31,11 +31,12 @@ import { reactive, ref } from "vue";
 import { useApplicationStore } from "@stores";
 import moment from "moment";
 import { onLoad } from "@dcloudio/uni-app";
-import { getFormatBillList } from "@utils";
+import { getFormatBillList, getCurrentInstanceParams, copyJsonToClipboard } from "@utils";
 
 const { getBillList, initGoodList } = useApplicationStore();
 const billList = ref([]);
 const calendarData = ref([]);
+const localforage = getCurrentInstanceParams("localforage");
 
 const list1 = reactive(
 	new Array(7).fill("").map((item, i) => {
@@ -48,9 +49,25 @@ const handlerMonthSwitch = (v) => {
 	const data = formatData.getBillDataList([v.year, v.month]);
 	calendarData.value = data.calendarData;
 
+
 }
 
+const exportData = async () => {
+	const data = await localforage.getItem('billList');
+	copyJsonToClipboard(data)
+	// const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+	// const file = window.URL.createObjectURL(blob);
 
+	// uni.saveFile({
+	// 	tempFilePath: file,
+	// 	success: function (res) {
+	// 		var savedFilePath = res.savedFilePath;
+	// 		console.log(savedFilePath);
+
+	// 	}
+	// });
+
+}
 onLoad(() => {
 	(async () => {
 		const formatData = getFormatBillList(await getBillList());

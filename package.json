@@ -58,6 +58,8 @@
     "localforage": "^1.10.0",
     "moment": "^2.30.1",
     "pinia": "2.1.7",
+    "tesseract.js": "^6.0.1",
+    "tesseract.js-core": "^6.0.0",
     "uuid": "^11.1.0",
     "uview-plus": "3.4.54",
     "vue": "^3.4.21",

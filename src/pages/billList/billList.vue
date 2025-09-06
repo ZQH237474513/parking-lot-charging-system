@@ -38,6 +38,7 @@
 				</view>
 			</view>
 			<view v-for="item in curMountData" class="billCard">
+				<!-- <up-button shape="circle" text="删除" plain @click="() => handleDeteleDate(item)"></up-button> -->
 				<view class="createTime">{{ `创建时间 : ${item.createTime}` }}</view>
 				<view>
 					<view class="goodsList">{{ `商品列表 : ` }}</view>
@@ -113,7 +114,12 @@ const curMountTotalPrice = ref(0);
 const statisticsGoodsNumList = ref([]) as any;
 const isShowTotalDatail = ref(false);
 
-const { getBillList } = useApplicationStore();
+const { getBillList, deleteBillData } = useApplicationStore();
+const handleDeteleDate = (value: any) => {
+	deleteBillData(value.id);
+
+
+}
 
 const changeHandler = (e: any) => {
 	const { columnIndex, value, values, index } = e;
@@ -129,6 +135,8 @@ const handlerConfirm = (e: any) => {
 	const { value } = e;
 	const formatData = getFormatBillList(billList.value);
 	const data = formatData.getBillDataList(value, billList.value).billList;
+	console.log(data);
+
 	curMountData.value = data;
 	curMountTotalPrice.value = getCurMountTotalPrice(data);
 	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
@@ -137,14 +145,16 @@ const handlerConfirm = (e: any) => {
 
 onLoad(() => {
 	(async () => {
-		const formatData = getFormatBillList(await getBillList());
 
+		const formatData = getFormatBillList(await getBillList());
 		columns.value = formatData.columns;
 		const data = formatData.getBillDataList().billList;
+		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
+
 		curMountData.value = data;
+
 		billList.value = formatData.metaData;
 		curMountTotalPrice.value = getCurMountTotalPrice(data);
-		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
 	})();
 });
 </script>

@@ -18,9 +18,9 @@ export const getCurMountTotalPrice = (data: any[]) => {
 
 /** 统计当月所有商品数量 */
 export const getStatisticsGoodsNumList = (data: any[]) => {
-	const goodsList: any[] = [];
+	let goodsList: any[] = [];
 	for (let i = 0; i < data.length; i++) {
-		const arr: any[] = data[i].goodsList;
+		const arr: any[] = JSON.parse(JSON.stringify(data))[i].goodsList;
 		for (let j = 0; j < arr.length; j++) {
 			const goods = arr[j];
 			const targetIndex = goodsList.findIndex((curGoods) => {
@@ -28,7 +28,7 @@ export const getStatisticsGoodsNumList = (data: any[]) => {
 			});
 
 			if (targetIndex !== -1) {
-				goodsList[targetIndex].num = (goodsList[targetIndex]?.num || 1) + (goods?.num || 1);
+				goodsList[targetIndex].num += goods?.num || 1;
 			} else {
 				goodsList.push(goods);
 			}
@@ -81,4 +81,14 @@ export const getFormatBillList = (data: any[]) => {
 	};
 
 	return { columns, metaData: data, getBillDataList };
+};
+
+/** 复制文本 */
+export const copyJsonToClipboard = (json: any) => {
+	uni.setClipboardData({
+		data: JSON.stringify(json, null, 2),
+		success: function () {
+			console.log("success");
+		},
+	});
 };
