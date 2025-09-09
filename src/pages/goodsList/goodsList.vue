@@ -1,28 +1,13 @@
 <template>
 	<view>
-		<view class="search"
-			><up-search
-				@search="clickSearch"
-				@clear="handleClear"
-				@change="handleChange"
-				:show-action="false"
-				placeholder="搜索商品"></up-search>
+		<view class="search"><up-search @search="clickSearch" @clear="handleClear" @change="handleChange"
+				:show-action="false" placeholder="搜索商品"></up-search>
 		</view>
-		<scroll-view
-			scroll-y
-			scroll-top>
+		<scroll-view scroll-y scroll-top :style="{ height }">
 			<view class="goodsList">
-				<view
-					@click="() => handleSelect(item)"
-					v-for="(item, i) in targetList"
-					:id="item.id"
+				<view @click="() => handleSelect(item)" v-for="(item, i) in targetList" :id="item.id"
 					:class="selectedIds.includes(item.id) ? 'goodsItem active' : 'goodsItem'">
-					<up-image
-						:show-loading="true"
-						:src="item.imgPath"
-						width="100%"
-						radius="10px"
-						height="150px"
+					<up-image :show-loading="true" :src="item.imgPath" width="100%" radius="10px" height="150px"
 						lazyLoad></up-image>
 
 					<view class="priceName">
@@ -34,14 +19,8 @@
 			</view>
 		</scroll-view>
 
-		<view
-			v-if="isSelected"
-			class="bottomSubmit">
-			<up-button
-				type="primary"
-				shape="circle"
-				text="提交"
-				@click="handleSubmit"></up-button>
+		<view v-if="isSelected" class="bottomSubmit">
+			<up-button type="primary" shape="circle" text="提交" @click="handleSubmit"></up-button>
 		</view>
 	</view>
 </template>
@@ -50,17 +29,23 @@
 import { onMounted, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useApplicationStore } from "@stores";
+import { winHW } from '@utils/system.ts'
 
 const { goodsList } = useApplicationStore();
 
 const targetList = ref([]) as any;
 const selectedIds = ref([]) as any; // 选中的ids
 const isSelected = ref(false); // 是否可选中
+const height = ref('') as any;
 
 targetList.value = goodsList;
 
+console.log(winHW());
+
+
 onLoad((option: any) => {
 	const { type = "view", id } = option;
+	height.value = `${winHW().height - 160}px`;
 
 	if (type !== "view") {
 		isSelected.value = true;
@@ -163,9 +148,11 @@ const handleSubmit = () => {
 			margin-bottom: 10px;
 		}
 	}
+
 	.active {
 		border: 1px solid red;
 	}
+
 	.fix {
 		height: 300px;
 	}

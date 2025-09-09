@@ -4,7 +4,7 @@
 			@cancel="show = false"></up-picker>
 		<up-button @click="show = true">打开</up-button>
 
-		<view class="billContent">
+		<view class="billContent" :style="{ height }">
 			<view class="billCard" @click="isShowTotalDatail = !isShowTotalDatail">
 				<view :style="{ fontSize: '18px' }">
 					<view>
@@ -47,13 +47,13 @@
 							<up-th width="8%"></up-th>
 							<up-th width="38%">名称</up-th>
 							<up-th>价格</up-th>
-							<up-th>数量</up-th>
+							<!-- <up-th>数量</up-th> -->
 						</up-tr>
 						<up-tr v-for="(goods, i) in item.goodsList">
 							<up-td width="10%">{{ i + 1 }}</up-td>
 							<up-td width="40%">{{ goods.name }}</up-td>
 							<up-td>{{ `${goods.price} 元 ` }}</up-td>
-							<up-td>{{ goods?.num || 1 }}</up-td>
+							<!-- <up-td>{{ goods?.num || 1 }}</up-td> -->
 							<!-- <up-td>{{ `${goods.originalPrice} 元 ` }}</up-td> -->
 						</up-tr>
 					</up-table>
@@ -68,7 +68,6 @@
 .wrapper {
 	.billContent {
 		width: 100%;
-		height: 82vh;
 		overflow-y: scroll;
 
 		.billCard {
@@ -104,6 +103,7 @@ import { onMounted, ref } from "vue";
 import { useApplicationStore } from "@stores";
 import { getCurMountTotalPrice, getStatisticsGoodsNumList, getFormatBillList } from "@utils";
 import { onLoad } from "@dcloudio/uni-app";
+import { winHW } from '@utils/system.ts'
 
 const billList = ref([]) as any;
 const columns = ref([]) as any;
@@ -113,6 +113,7 @@ const curMountData = ref([]) as any;
 const curMountTotalPrice = ref(0);
 const statisticsGoodsNumList = ref([]) as any;
 const isShowTotalDatail = ref(false);
+const height = ref('') as any;
 
 const { getBillList, deleteBillData } = useApplicationStore();
 const handleDeteleDate = (value: any) => {
@@ -145,6 +146,8 @@ const handlerConfirm = (e: any) => {
 
 onLoad(() => {
 	(async () => {
+		height.value = `${winHW().height - 160}px`;
+		console.log(height.value);
 
 		const formatData = getFormatBillList(await getBillList());
 		columns.value = formatData.columns;

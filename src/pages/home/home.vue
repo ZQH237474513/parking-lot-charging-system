@@ -1,10 +1,13 @@
 <template>
 	<view class="content">
+
 		<view class="item">
 			<up-button type="primary" shape="circle" text="外部车辆维修账单" plain @click="addExternalBill"></up-button>
 			<up-button shape="circle" text="内部车辆维修账单" plain @click="addInteriorBill"></up-button>
-			{{ img }}
+
 		</view>
+
+		<image :src="img" mode="scaleToFill" />
 	</view>
 </template>
 
