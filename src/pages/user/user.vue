@@ -9,8 +9,9 @@
 			<uni-calendar class="uni-calendar--hook" :selected="calendarData" @monthSwitch="handlerMonthSwitch" />
 		</view>
 		<up-cell-group>
-			<up-cell icon="reload" title="更新数据" @click="() => initGoodList(true)"></up-cell>
+			<up-cell icon="reload" title="更新数据" @click="handlerUpdaGoods"></up-cell>
 			<up-cell icon="integral-fill" title="导出数据" @click="exportData"></up-cell>
+			<up-cell icon="integral-fill" title="是否显示删除按钮"></up-cell>
 		</up-cell-group>
 	</view>
 </template>
@@ -44,6 +45,16 @@ const list1 = reactive(
 	})
 );
 
+const handlerUpdaGoods = () => {
+	initGoodList(true)
+	setTimeout(() => {
+		uni.showToast({
+			title: '更新完成',
+			duration: 2000
+		});
+	}, 0.5e3);
+}
+
 const handlerMonthSwitch = (v) => {
 	const formatData = getFormatBillList(billList.value);
 	const data = formatData.getBillDataList([v.year, v.month]);
@@ -53,19 +64,25 @@ const handlerMonthSwitch = (v) => {
 }
 
 const exportData = async () => {
-	const data = await localforage.getItem('billList');
-	copyJsonToClipboard(data)
-	// const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-	// const file = window.URL.createObjectURL(blob);
-
-	// uni.saveFile({
-	// 	tempFilePath: file,
-	// 	success: function (res) {
-	// 		var savedFilePath = res.savedFilePath;
-	// 		console.log(savedFilePath);
-
-	// 	}
-	// });
+	try {
+		const data = await localforage.getItem('billList');
+		copyJsonToClipboard(data)
+		const link = document.createElement('a');
+		const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+		link.href = window.URL.createObjectURL(blob);
+		link.setAttribute('download', '账单列表');
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(blob);
+	} finally {
+		setTimeout(() => {
+			uni.showToast({
+				title: '下载完成',
+				duration: 2000
+			});
+		}, 0.5e3);
+	}
 
 }
 onLoad(() => {

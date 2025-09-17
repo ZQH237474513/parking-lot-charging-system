@@ -37,18 +37,21 @@ const targetList = ref([]) as any;
 const selectedIds = ref([]) as any; // 选中的ids
 const isSelected = ref(false); // 是否可选中
 const height = ref('') as any;
-
+let billId: any = '';
 targetList.value = goodsList;
 
-console.log(winHW());
+
 
 
 onLoad((option: any) => {
-	const { type = "view", id } = option;
+	const { type = "view" } = option;
 	height.value = `${winHW().height - 160}px`;
 
 	if (type !== "view") {
 		isSelected.value = true;
+	}
+	if (option?.billId) {
+		billId = option?.billId;
 	}
 });
 
@@ -92,7 +95,7 @@ const handleSubmit = () => {
 		return;
 	}
 	uni.navigateTo({
-		url: `../billDetail/billDetail?ids=${selectedIds.value.join(",")}`,
+		url: `../billDetail/billDetail?ids=${selectedIds.value.join(",")}&billId=${billId}`,
 	});
 };
 </script>

@@ -24,13 +24,13 @@
 						<up-tr>
 							<up-th width="8%"></up-th>
 							<up-th width="38%">名称</up-th>
-							<up-th>价格</up-th>
+							<!-- <up-th>价格</up-th> -->
 							<up-th>数量</up-th>
 						</up-tr>
 						<up-tr v-for="(goods, i) in statisticsGoodsNumList">
 							<up-td width="10%">{{ i + 1 }}</up-td>
 							<up-td width="40%">{{ goods.name }}</up-td>
-							<up-td>{{ `${goods.price} 元 ` }}</up-td>
+							<!-- <up-td>{{ `${goods.price} 元 ` }}</up-td> -->
 							<up-td>{{ goods?.num || 1 }}</up-td>
 							<!-- <up-td>{{ `${goods.originalPrice} 元 ` }}</up-td> -->
 						</up-tr>
@@ -40,6 +40,7 @@
 			<view v-for="item in curMountData" class="billCard">
 				<!-- <up-button shape="circle" text="删除" plain @click="() => handleDeteleDate(item)"></up-button> -->
 				<view class="createTime">{{ `创建时间 : ${item.createTime}` }}</view>
+				<view>{{ `订单内型 : ${item?.isInnerOrder ? '内部订单' : '外部订单'}` }}</view>
 				<view>
 					<view class="goodsList">{{ `商品列表 : ` }}</view>
 					<up-table fontSize="17px">
@@ -47,13 +48,13 @@
 							<up-th width="8%"></up-th>
 							<up-th width="38%">名称</up-th>
 							<up-th>价格</up-th>
-							<!-- <up-th>数量</up-th> -->
+							<up-th>数量</up-th>
 						</up-tr>
 						<up-tr v-for="(goods, i) in item.goodsList">
 							<up-td width="10%">{{ i + 1 }}</up-td>
 							<up-td width="40%">{{ goods.name }}</up-td>
 							<up-td>{{ `${goods.price} 元 ` }}</up-td>
-							<!-- <up-td>{{ goods?.num || 1 }}</up-td> -->
+							<up-td>{{ goods?.num || 1 }}</up-td>
 							<!-- <up-td>{{ `${goods.originalPrice} 元 ` }}</up-td> -->
 						</up-tr>
 					</up-table>
@@ -149,8 +150,8 @@ onLoad(() => {
 		height.value = `${winHW().height - 160}px`;
 		console.log(height.value);
 
-		const formatData = getFormatBillList(await getBillList());
-		columns.value = formatData.columns;
+		const formatData = getFormatBillList((await getBillList() || []));
+		columns.value = formatData?.columns;
 		const data = formatData.getBillDataList().billList;
 		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
 

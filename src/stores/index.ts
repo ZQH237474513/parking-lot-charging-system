@@ -31,7 +31,7 @@ export const useApplicationStore = defineStore("application", () => {
 				return item.id === data.id;
 			});
 
-			if (isRepeat) {
+			if (isRepeat && !data.isInnerOrder) {
 				return "repeat";
 			}
 			dbGoodsList.push(data);
@@ -49,7 +49,7 @@ export const useApplicationStore = defineStore("application", () => {
 
 	const getBillList = async () => {
 		const billList: any = {};
-		for (const item of await localforage.getItem("billList")) {
+		for (const item of (await localforage.getItem("billList")) || []) {
 			const now = moment(item.createTime, "YYYY年MM月DD日 HH:mm:ss");
 			const year = now.year();
 			const month = now.month() + 1;
@@ -70,7 +70,7 @@ export const useApplicationStore = defineStore("application", () => {
 			}
 		}
 
-		return billList;
+		return billList || [];
 	};
 
 	const deleteBillData = async (id: string) => {

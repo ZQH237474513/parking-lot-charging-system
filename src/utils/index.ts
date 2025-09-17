@@ -12,7 +12,12 @@ export const getCurrentInstanceParams = (name: string) => {
 /** 获取当月总金额 */
 export const getCurMountTotalPrice = (data: any[]) => {
 	return data.reduce((total: number, item: any) => {
-		return total + item.totalPrice;
+		// 过滤掉内部订单金额
+		if (item.isInnerOrder) {
+			return total;
+		} else {
+			return total + item.totalPrice;
+		}
 	}, 0);
 };
 
@@ -70,9 +75,7 @@ export const getFormatBillList = (data: any[]) => {
 		for (const key in mountList) {
 			if (Object.prototype.hasOwnProperty.call(mountList, key)) {
 				const date = `${yearNum}-${mountNum}-${key}`;
-				const totalPrice = mountList[key].reduce((total: number, item: any) => {
-					return total + item.totalPrice;
-				}, 0);
+				const totalPrice = getCurMountTotalPrice(mountList[key]);
 				calendarData.push({ date, info: `${totalPrice}元` });
 			}
 		}
@@ -91,4 +94,20 @@ export const copyJsonToClipboard = (json: any) => {
 			console.log("success");
 		},
 	});
+};
+
+export const isHttpStart = (url: string) => {
+	return /^(http|https)?:\/\//i.test(url);
+};
+
+export const getUrlParams = (url: string) => {
+	const reg = /(\w+)=([^&]+)/g;
+	const params: any = {};
+	let match;
+
+	while ((match = reg.exec(url)) !== null) {
+		params[match[1]] = match[2];
+	}
+
+	return params;
 };

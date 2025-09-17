@@ -1,41 +1,27 @@
 <template>
 	<view class="wrapper">
 		<up-toast ref="uToastRef"></up-toast>
-		<scroll-view
-			scroll-y
-			scroll-top>
+		<scroll-view scroll-y scroll-top>
 			<view class="goodsList">
-				<view
-					v-for="(item, i) in targetList"
-					:id="item.id"
-					class="goodsItem">
+				<view v-for="(item, i) in targetList" :id="item.id" class="goodsItem">
 					<view class="left">
-						<up-image
-							:show-loading="true"
-							:src="item.imgPath"
-							width="100%"
-							radius="10px"
-							height="100%"
-							lazyLoad></up-image
-					></view>
+						<up-image :show-loading="true" :src="item.imgPath" width="100%" radius="10px" height="100%"
+							lazyLoad></up-image>
+					</view>
 					<view class="right">
 						<view class="priceName">
 							<text class="name">{{ item.name }}</text>
-							<text class="price">{{ `¥  ${item.price} 元` }}</text>
+							<text class="price">{{ `¥ ${item.price} 元` }}</text>
 						</view>
-						<up-number-box v-model="item.num"></up-number-box
-					></view>
+						<up-number-box v-model="item.num"></up-number-box>
+					</view>
 				</view>
 			</view>
 		</scroll-view>
 
 		<view class="bottomBtn">
 			<view class="totalPrice">{{ `总金额 : ${totalPrice} 元` }}</view>
-			<view
-				class="btn"
-				@click="handleCreateBill"
-				>结算</view
-			>
+			<view class="btn" @click="handleCreateBill">结算</view>
 		</view>
 	</view>
 </template>
@@ -44,6 +30,7 @@
 ::v-deep .uni-scroll-view-content {
 	margin-bottom: 100px;
 }
+
 .wrapper {
 	.goodsList {
 		height: 100%;
@@ -62,12 +49,14 @@
 			box-shadow: 1px 1px 5px 0 #808080;
 			margin: 20px 0;
 			max-height: 220px;
+
 			.left {
 				width: 200px;
 				height: 120px;
 				margin: 10px 5px 5px 10px;
 				box-sizing: content-box;
 			}
+
 			.right {
 				display: flex;
 				justify-content: space-between;
@@ -81,6 +70,7 @@
 					// justify-content: space-evenly;
 					font-weight: bold;
 					font-size: 20px;
+
 					.name {
 						margin: 0 0 20px 0px;
 					}
@@ -98,6 +88,7 @@
 				margin-bottom: 10px;
 			}
 		}
+
 		.active {
 			border: 1px solid red;
 		}
@@ -117,6 +108,7 @@
 		justify-content: space-between;
 		align-items: center;
 		box-shadow: 2px 2px 20px 0px #808080;
+
 		.totalPrice {
 			min-width: 150px;
 			height: 100%;
@@ -126,6 +118,7 @@
 			font-size: 25px;
 			margin: 10px 0 0 0;
 		}
+
 		.btn {
 			background-color: orange;
 			width: 100px;
@@ -149,6 +142,7 @@ import dayjs from "dayjs";
 const targetList = ref([]) as any;
 const billId = ref(uuidv4()) as any;
 const uToastRef = ref(null) as any;
+const isInnerOrder = ref(false) as any;
 
 const { goodsList, saveBill } = useApplicationStore();
 
@@ -176,6 +170,10 @@ onLoad((option: any) => {
 			data.push(target);
 		});
 		targetList.value = data;
+		if (option?.billId) {
+			billId.value = option?.billId;
+			isInnerOrder.value = true;
+		}
 	}
 });
 
@@ -196,6 +194,7 @@ const handleCreateBill = async () => {
 		goodsList: JSON.parse(JSON.stringify(targetList.value)),
 		totalPrice: totalPrice.value,
 		totalProfitPrice: totalProfitPrice.value,
+		isInnerOrder: isInnerOrder.value,
 	});
 
 	switch (status) {

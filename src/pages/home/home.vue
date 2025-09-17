@@ -3,11 +3,9 @@
 
 		<view class="item">
 			<up-button type="primary" shape="circle" text="外部车辆维修账单" plain @click="addExternalBill"></up-button>
-			<up-button shape="circle" text="内部车辆维修账单" plain @click="addInteriorBill"></up-button>
+			<up-button shape="circle" :text="title" plain @click="addInteriorBill"></up-button>
 
 		</view>
-
-		<image :src="img" mode="scaleToFill" />
 	</view>
 </template>
 
@@ -34,7 +32,8 @@
 import { ref } from 'vue';
 import { useApplicationStore } from '@stores';
 import { createWorker } from 'tesseract.js';
-const img = ref('');
+import { isHttpStart, getUrlParams } from "@utils";
+const title = ref('内部车辆维修账单');
 
 const applicationStore = useApplicationStore();
 
@@ -53,30 +52,59 @@ function extractNumbers(str) {
 		.join('');
 }
 const addInteriorBill = () => {
-	// console.log(createWorker);
 
-	uni.chooseImage({
-		count: 1, //默认9
-		sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
-		// sourceType: ['album'], //从相册选择
-		success: async (res) => {
-			img.value = res.tempFilePaths[0];
-			console.log(res.tempFilePaths[0]);
-			console.log("===>");
+	// #ifdef APP
+	uni.scanCode({
+		success: function (res) {
+			console.log('条码类型：' + res.scanType);
+			console.log('条码内容：' + res.result);
+			const isHttp = isHttpStart(res.result);
+			console.log(isHttp);
+			if (!isHttp) {
+				return;
+			}
+			const params = getUrlParams(res.result);
+			const billId = params?.content;
+			if (billId) {
+				uni.navigateTo({
+					url: `../goodsList/goodsList?type=add&billId=${billId}`
+				});
+			}
 
-			const worker = await createWorker(['eng', 'chi_sim'], 1, {
-				corePath: '../../../node_modules/tesseract.js-core',
-				workerPath: "../../../node_modules/tesseract.js/dist/worker.min.js",
-				logger: function (m) { console.log(m); }
-			});
-
-			const result = await worker.recognize('../../static/image/ocr.png'); // 进行文字识别
-			console.log(result.data);
-
-			img.value = (result.data.text.match(/\d{12,}/g) || [])[0];
-
-			worker.terminate(); // 终止 worker，释放资源
 		}
 	});
+	// #endif
+
+	// console.log(createWorker);
+
+	// uni.chooseImage({
+	// 	count: 1, //默认9
+	// 	sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
+	// 	// sourceType: ['album'], //从相册选择
+	// 	success: async (res) => {
+	// 		img.value = res.tempFilePaths[0];
+	// 		console.log(res.tempFilePaths[0]);
+	// 		console.log("===>");
+
+	// 		const worker = await createWorker(['eng', 'chi_sim'], 1, {
+	// 			corePath: '../../../node_modules/tesseract.js-core',
+	// 			workerPath: "../../../node_modules/tesseract.js/dist/worker.min.js",
+	// 			logger: function (m) { console.log(m); }
+	// 		});
+
+	// 		const result = await worker.recognize('../../static/image/ocr.png'); // 进行文字识别
+	// 		console.log(result.data);
+
+	// 		img.value = (result.data.text.match(/\d{12,}/g) || [])[0];
+
+	// 		worker.terminate(); // 终止 worker，释放资源
+	// 	}
+	// });
+
+	// #ifdef H5
+	uni.navigateTo({
+		url: `../goodsList/goodsList?type=add&billId=794d8503da44135bc7542d22104b7079`
+	});
+	// #endif
 };
 </script>
