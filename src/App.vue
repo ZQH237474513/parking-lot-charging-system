@@ -1,12 +1,14 @@
 <template></template>
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, onUpdated } from "vue";
 import { useApplicationStore } from "@stores";
 
-const { initGoodList } = useApplicationStore();
+const { initGoodList, initUserInfo } = useApplicationStore();
 onMounted(() => {
 	initGoodList();
+	initUserInfo();
 });
+
 </script>
 
 <style lang="scss">

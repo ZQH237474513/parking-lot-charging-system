@@ -11,3 +11,13 @@ export const getGoodsList = () => {
 		url,
 	});
 };
+
+export const getUserInfo = () => {
+	let url = `${VITE_BASIC_API}/zqhweb/localstorage/raw/master/publice/parking-lot-charging-system/json/userInfo.json`;
+	// #ifdef APP
+	url = `/zqhweb/localstorage/raw/master/publice/parking-lot-charging-system/json/userInfo.json`;
+	// #endif
+	return request({
+		url,
+	});
+};

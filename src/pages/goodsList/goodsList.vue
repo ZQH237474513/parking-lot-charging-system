@@ -94,7 +94,7 @@ const handleSubmit = () => {
 	if (!selectedIds.value.length) {
 		return;
 	}
-	uni.navigateTo({
+	uni.switchTab({
 		url: `../billDetail/billDetail?ids=${selectedIds.value.join(",")}&billId=${billId}`,
 	});
 };

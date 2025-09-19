@@ -1,13 +1,33 @@
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
-import { getGoodsList } from "@apis";
+import { getGoodsList, getUserInfo } from "@apis";
 import { getCurrentInstanceParams } from "@utils";
 import moment from "moment";
+import db from "./localforage";
 
 export const useApplicationStore = defineStore("application", () => {
 	const goodsList = ref([]) as any;
+	const userInfoList = ref([]) as any;
 
 	const localforage = getCurrentInstanceParams("localforage");
+
+	const mainState = reactive({
+		isLogin: false,
+	});
+	/* 是否登陆 */
+	const isLoginHandle = async () => {
+		if (mainState.isLogin) {
+			return undefined;
+		}
+
+		const dbuserInfo = await localforage.getItem("userInfo");
+
+		if (dbuserInfo) {
+			mainState.isLogin = true;
+			return dbuserInfo;
+		}
+		return undefined;
+	};
 
 	const initGoodList = async (isUpdate = false) => {
 		const dbGoodsList = await localforage.getItem("goodsList");
@@ -19,6 +39,17 @@ export const useApplicationStore = defineStore("application", () => {
 				goodsList.value = data;
 				await localforage.setItem("goodsList", data);
 			} catch (error) {}
+		}
+	};
+
+	const initUserInfo = async (isUpdate = false) => {
+		const dbuserInfoList = await localforage.getItem("userInfoList");
+		if (dbuserInfoList && dbuserInfoList?.length && !isUpdate) {
+			userInfoList.value = dbuserInfoList;
+		} else {
+			const data = await getUserInfo();
+			userInfoList.value = data;
+			await localforage.setItem("userInfoList", data);
 		}
 	};
 
@@ -87,5 +118,15 @@ export const useApplicationStore = defineStore("application", () => {
 			await localforage.setItem("billList", billList);
 		}
 	};
-	return { initGoodList, goodsList, saveBill, getBillList, deleteBillData };
+	return {
+		initGoodList,
+		goodsList,
+		saveBill,
+		getBillList,
+		deleteBillData,
+		userInfoList,
+		initUserInfo,
+		mainState,
+		isLoginHandle,
+	};
 });

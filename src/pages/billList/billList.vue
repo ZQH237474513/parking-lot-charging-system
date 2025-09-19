@@ -40,7 +40,7 @@
 			<view v-for="item in curMountData" class="billCard">
 				<!-- <up-button shape="circle" text="删除" plain @click="() => handleDeteleDate(item)"></up-button> -->
 				<view class="createTime">{{ `创建时间 : ${item.createTime}` }}</view>
-				<view>{{ `订单内型 : ${item?.isInnerOrder ? '内部订单' : '外部订单'}` }}</view>
+				<view>{{ `订单类型 : ${item?.isInnerOrder ? '内部订单' : '外部订单'}` }}</view>
 				<view>
 					<view class="goodsList">{{ `商品列表 : ` }}</view>
 					<up-table fontSize="17px">

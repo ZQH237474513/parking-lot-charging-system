@@ -15,6 +15,9 @@ const db = function (app: any) {
 	localStorage.setItem = (key: string, data: any) => {
 		uni.setStorageSync(key, JSON.stringify(data));
 	};
+	localStorage.removeItem = (key: string, data: any) => {
+		uni.removeStorageSync(key);
+	};
 
 	// #ifdef H5
 	localStorage = localforage;

@@ -11,7 +11,7 @@
 		<up-cell-group>
 			<up-cell icon="reload" title="更新数据" @click="handlerUpdaGoods"></up-cell>
 			<up-cell icon="integral-fill" title="导出数据" @click="exportData"></up-cell>
-			<up-cell icon="integral-fill" title="是否显示删除按钮"></up-cell>
+			<up-cell v-if="mainState?.isLogin" title="注销" @click="logoutHandle"></up-cell>
 		</up-cell-group>
 	</view>
 </template>
@@ -28,16 +28,17 @@
 </style>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useApplicationStore } from "@stores";
 import moment from "moment";
 import { onLoad } from "@dcloudio/uni-app";
 import { getFormatBillList, getCurrentInstanceParams, copyJsonToClipboard } from "@utils";
 
-const { getBillList, initGoodList } = useApplicationStore();
+const { getBillList, initGoodList, initUserInfo, mainState, isLoginHandle } = useApplicationStore();
 const billList = ref([]);
 const calendarData = ref([]);
 const localforage = getCurrentInstanceParams("localforage");
+
 
 const list1 = reactive(
 	new Array(7).fill("").map((item, i) => {
@@ -47,6 +48,7 @@ const list1 = reactive(
 
 const handlerUpdaGoods = () => {
 	initGoodList(true)
+	initUserInfo(true)
 	setTimeout(() => {
 		uni.showToast({
 			title: '更新完成',
@@ -61,6 +63,14 @@ const handlerMonthSwitch = (v) => {
 	calendarData.value = data.calendarData;
 
 
+}
+/** 注销 */
+
+const logoutHandle = async () => {
+	await localforage.removeItem('userInfo');
+	uni.navigateTo({
+		url: `../login/login`
+	});
 }
 
 const exportData = async () => {
@@ -94,6 +104,5 @@ onLoad(() => {
 	})()
 
 })
-
 
 </script>
