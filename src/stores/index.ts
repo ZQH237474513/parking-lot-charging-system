@@ -110,6 +110,8 @@ export const useApplicationStore = defineStore("application", () => {
 	};
 
 	const deleteBillData = async (id: string) => {
+		console.log(id);
+
 		const billList = (await localforage.getItem("billList")) as any[];
 		console.log(billList.length);
 

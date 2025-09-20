@@ -12,7 +12,7 @@
         "compilerVersion" : 3,
         "splashscreen" : {
             "alwaysShowBeforeRender" : true,
-            "waiting" : true,
+            "waiting" : false,
             "autoclose" : true,
             "delay" : 0
         },
@@ -51,7 +51,8 @@
             /* SDK配置 */
             "sdkConfigs" : {},
             "splashscreen" : {
-                "androidStyle" : "common"
+                "androidStyle" : "common",
+                "useOriginalMsgbox" : false
             },
             "icons" : {
                 "android" : {

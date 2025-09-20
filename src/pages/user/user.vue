@@ -68,6 +68,7 @@ const handlerMonthSwitch = (v) => {
 
 const logoutHandle = async () => {
 	await localforage.removeItem('userInfo');
+	mainState.isAdmin = false;
 	uni.navigateTo({
 		url: `../login/login`
 	});

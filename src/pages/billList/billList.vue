@@ -1,5 +1,16 @@
 <template>
 	<view class="wrapper">
+		<uni-popup ref="popup" type="bottom" border-radius="10px 10px 0 0">
+			<view class="popupWrapper">
+				<view :style="{ color: 'red', fontSize: '20px', fontWeight: 'bold', marginLeft: '40px' }">是否删除当前订单?
+				</view>
+				<view class="bottomBtn">
+					<up-button type="error" @click="() => closeOrOpenPopup('close')">取消</up-button>
+					<view :style="{ width: '40px' }"></view>
+					<up-button type="primary" ref="sureBtn" @click="handleSure">确定</up-button>
+				</view>
+			</view>
+		</uni-popup>
 		<up-picker :show="show" :columns="columns" ref="uPickerRef" @change="changeHandler" @confirm="handlerConfirm"
 			@cancel="show = false"></up-picker>
 		<up-button @click="show = true">打开</up-button>
@@ -69,6 +80,23 @@
 
 <style scoped lang="scss">
 .wrapper {
+	.popupWrapper {
+		display: flex;
+		justify-content: space-between;
+		flex-direction: column;
+		width: 300px;
+		height: 200px;
+		background: white;
+		padding: 60px 10px 20px 10px;
+		box-sizing: border-box;
+		border-radius: 10px;
+
+		.bottomBtn {
+			display: flex;
+			justify-content: space-evenly;
+		}
+	}
+
 	.billContent {
 		width: 100%;
 		overflow-y: scroll;
@@ -117,13 +145,50 @@ const curMountTotalPrice = ref(0);
 const statisticsGoodsNumList = ref([]) as any;
 const isShowTotalDatail = ref(false);
 const height = ref('') as any;
+const popup = ref(null) as any;
+const sureBtn = ref(null) as any;
 
 const { getBillList, deleteBillData, mainState } = useApplicationStore();
-const handleDeteleDate = (value: any) => {
-	deleteBillData(value.id);
+
+let handleSure = () => {
+	// deleteBillData(value.id);
+}
+
+
+const closeOrOpenPopup = async (tyep: any = 'open', cb?: any) => {
+	switch (tyep) {
+		case "open":
+			popup.value.open('center');
+			handleSure = cb;
+			break;
+		case "close":
+			popup.value.close();
+			break;
+		default: popup.value.open('center');
+			break;
+	}
+
+
+
+
+
 
 
 }
+const handleDeteleDate = (value: any) => {
+	closeOrOpenPopup("open", async () => {
+		await deleteBillData(value.id);
+		closeOrOpenPopup("close")
+		uni.showToast({
+			icon: 'success',
+			title: '删除成功',
+			duration: 1000
+		});
+	});
+}
+
+
+
 
 const changeHandler = (e: any) => {
 	const { columnIndex, value, values, index } = e;
@@ -146,6 +211,15 @@ const handlerConfirm = (e: any) => {
 	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
 	show.value = false;
 };
+
+
+// const initBillList = (data: any) => {
+// 	const formatData = getFormatBillList(data);
+// 	curMountData.value = formatData.getBillDataList().billList;;
+// 	curMountTotalPrice.value = getCurMountTotalPrice(data);
+// 	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
+// 	return { columns: formatData.columns, metaData: formatData.metaData }
+// }
 
 onLoad(() => {
 	(async () => {
