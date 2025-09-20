@@ -144,7 +144,7 @@ const billId = ref(uuidv4()) as any;
 const uToastRef = ref(null) as any;
 const isInnerOrder = ref(false) as any;
 
-const { goodsList, saveBill } = useApplicationStore();
+const { goodsList, saveBill, mainState } = useApplicationStore();
 
 const totalPrice = computed(() => {
 	return targetList.value.reduce((total: number, item: any) => {

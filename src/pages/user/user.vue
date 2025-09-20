@@ -10,7 +10,7 @@
 		</view>
 		<up-cell-group>
 			<up-cell icon="reload" title="更新数据" @click="handlerUpdaGoods"></up-cell>
-			<up-cell icon="integral-fill" title="导出数据" @click="exportData"></up-cell>
+			<up-cell v-if="mainState.isAdmin" icon="integral-fill" title="导出数据" @click="exportData"></up-cell>
 			<up-cell v-if="mainState?.isLogin" title="注销" @click="logoutHandle"></up-cell>
 		</up-cell-group>
 	</view>

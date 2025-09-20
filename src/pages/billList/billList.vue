@@ -38,7 +38,8 @@
 				</view>
 			</view>
 			<view v-for="item in curMountData" class="billCard">
-				<!-- <up-button shape="circle" text="删除" plain @click="() => handleDeteleDate(item)"></up-button> -->
+				<up-button v-if="mainState.isAdmin" shape="circle" text="删除" plain
+					@click="() => handleDeteleDate(item)"></up-button>
 				<view class="createTime">{{ `创建时间 : ${item.createTime}` }}</view>
 				<view>{{ `订单类型 : ${item?.isInnerOrder ? '内部订单' : '外部订单'}` }}</view>
 				<view>
@@ -48,14 +49,15 @@
 							<up-th width="8%"></up-th>
 							<up-th width="38%">名称</up-th>
 							<up-th>价格</up-th>
+							<up-th v-if="mainState.isAdmin">原价</up-th>
 							<up-th>数量</up-th>
 						</up-tr>
 						<up-tr v-for="(goods, i) in item.goodsList">
 							<up-td width="10%">{{ i + 1 }}</up-td>
 							<up-td width="40%">{{ goods.name }}</up-td>
 							<up-td>{{ `${goods.price} 元 ` }}</up-td>
+							<up-td v-if="mainState.isAdmin">{{ `${goods.originalPrice} 元 ` }}</up-td>
 							<up-td>{{ goods?.num || 1 }}</up-td>
-							<!-- <up-td>{{ `${goods.originalPrice} 元 ` }}</up-td> -->
 						</up-tr>
 					</up-table>
 				</view>
@@ -104,7 +106,7 @@ import { onMounted, ref } from "vue";
 import { useApplicationStore } from "@stores";
 import { getCurMountTotalPrice, getStatisticsGoodsNumList, getFormatBillList } from "@utils";
 import { onLoad } from "@dcloudio/uni-app";
-import { winHW } from '@utils/system.ts'
+import { winHW } from '@utils/system.ts';
 
 const billList = ref([]) as any;
 const columns = ref([]) as any;
@@ -116,7 +118,7 @@ const statisticsGoodsNumList = ref([]) as any;
 const isShowTotalDatail = ref(false);
 const height = ref('') as any;
 
-const { getBillList, deleteBillData } = useApplicationStore();
+const { getBillList, deleteBillData, mainState } = useApplicationStore();
 const handleDeteleDate = (value: any) => {
 	deleteBillData(value.id);
 

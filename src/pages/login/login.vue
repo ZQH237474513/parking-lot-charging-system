@@ -4,10 +4,11 @@
 			<view class="logo">秒接单收银系统</view>
 			<up-form :model="state.form" :rules="state.rules" ref="uFormRef">
 				<up-form-item label="账号:" prop="accountNumber">
-					<up-input focus v-model="state.form.accountNumber" placeholder="请输入账号" clearable />
+					<up-input v-model="state.form.accountNumber" placeholder="请输入账号" clearable />
 				</up-form-item>
 				<up-form-item label="密码:" prop="password">
-					<up-input type="password" v-model="state.form.password" placeholder="请输入密码" clearable passwordVisibilityToggle />
+					<up-input type="password" v-model="state.form.password" placeholder="请输入密码" clearable
+						passwordVisibilityToggle />
 				</up-form-item>
 			</up-form>
 			<up-button @click="submit" type="primary">登陆</up-button>
@@ -19,33 +20,12 @@
 import { onBeforeMount, ref, reactive } from 'vue';
 import { useApplicationStore } from '@stores';
 import { getCurrentInstanceParams } from '@utils';
-import moment from 'moment';
 import { onLoad } from '@dcloudio/uni-app';
 
 const localforage = getCurrentInstanceParams('localforage');
 
 const { userInfoList, isLoginHandle } = useApplicationStore();
 const uFormRef = ref(null) as any;
-
-onBeforeMount(() => {
-	(async () => {
-		const userInfo = await isLoginHandle();
-		if (userInfo) {
-			const { time } = userInfo;
-			const beforTiem = moment(time, 'YYYY年MM月DD日 HH:mm:ss');
-			const nowTiem = moment();
-			const diffInDays = nowTiem.diff(beforTiem, 'day');
-
-			if (diffInDays < 7) {
-				uni.switchTab({
-					url: `../home/home`
-				});
-			} else {
-				await localforage.removeItem('userInfo');
-			}
-		}
-	})();
-});
 
 const state = reactive({
 	form: {
