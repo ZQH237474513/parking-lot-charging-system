@@ -189,7 +189,7 @@ const showToast = (title: string) => {
 const handleCreateBill = async () => {
 	const status = await saveBill({
 		id: billId.value,
-		// createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
+		// createTime: dayjs().format("YYYY年8月DD日 HH:mm:ss"),
 		createTime: dayjs().format("YYYY年MM月DD日 HH:mm:ss"),
 		goodsList: JSON.parse(JSON.stringify(targetList.value)),
 		totalPrice: totalPrice.value,

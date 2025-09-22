@@ -13,7 +13,7 @@
 		</uni-popup>
 		<up-picker :show="show" :columns="columns" ref="uPickerRef" @change="changeHandler" @confirm="handlerConfirm"
 			@cancel="show = false"></up-picker>
-		<up-button @click="show = true">打开</up-button>
+		<up-button @click="openPickPopup">打开</up-button>
 
 		<view class="billContent" :style="{ height }">
 			<view class="billCard" @click="isShowTotalDatail = !isShowTotalDatail">
@@ -133,8 +133,9 @@
 import { onMounted, ref } from "vue";
 import { useApplicationStore } from "@stores";
 import { getCurMountTotalPrice, getStatisticsGoodsNumList, getFormatBillList } from "@utils";
-import { onLoad } from "@dcloudio/uni-app";
+import { onLoad, onShow } from "@dcloudio/uni-app";
 import { winHW } from '@utils/system.ts';
+import moment from "moment";
 
 const billList = ref([]) as any;
 const columns = ref([]) as any;
@@ -153,6 +154,34 @@ const { getBillList, deleteBillData, mainState } = useApplicationStore();
 let handleSure = () => {
 	// deleteBillData(value.id);
 }
+
+const openPickPopup = () => {
+	const curYear = moment().year();
+	const curMonth = moment().month() + 1;
+	const tatgetYearIndex = columns.value[0]?.findIndex((item: any) => {
+		return String(item) === String(curYear);
+	});
+	const targetMonthIndex = columns.value[1]?.findIndex((item: any) => {
+		return String(item) === String(curMonth);
+	});
+
+	uPickerRef.value.setIndexs([tatgetYearIndex !== -1 ? tatgetYearIndex : 0, targetMonthIndex !== -1 ? targetMonthIndex : 0,]);
+
+	show.value = true;
+
+
+}
+
+const initBillList = (data: any[], value = [moment().year(), moment().month() + 1]) => {
+	if (!Object.keys(data).length) { return { columns: [], metaData: {} } };
+	const formatData = getFormatBillList(data);
+	const curBillList = formatData.getBillDataList(value).billList;;
+	curMountTotalPrice.value = getCurMountTotalPrice(curBillList);
+	statisticsGoodsNumList.value = getStatisticsGoodsNumList(curBillList);
+	curMountData.value = curBillList;
+	return { columns: formatData.columns, metaData: formatData.metaData }
+}
+
 
 
 const closeOrOpenPopup = async (tyep: any = 'open', cb?: any) => {
@@ -178,7 +207,13 @@ const closeOrOpenPopup = async (tyep: any = 'open', cb?: any) => {
 const handleDeteleDate = (value: any) => {
 	closeOrOpenPopup("open", async () => {
 		await deleteBillData(value.id);
-		closeOrOpenPopup("close")
+		closeOrOpenPopup("close");
+		const data = initBillList((await getBillList() || []))
+		columns.value = data?.columns;
+		billList.value = data.metaData;
+
+
+
 		uni.showToast({
 			icon: 'success',
 			title: '删除成功',
@@ -192,6 +227,8 @@ const handleDeteleDate = (value: any) => {
 
 const changeHandler = (e: any) => {
 	const { columnIndex, value, values, index } = e;
+	console.log(e);
+
 
 	const columnData = Object.keys(billList.value[value[0]]);
 
@@ -202,39 +239,20 @@ const changeHandler = (e: any) => {
 
 const handlerConfirm = (e: any) => {
 	const { value } = e;
-	const formatData = getFormatBillList(billList.value);
-	const data = formatData.getBillDataList(value, billList.value).billList;
-	console.log(data);
-
-	curMountData.value = data;
-	curMountTotalPrice.value = getCurMountTotalPrice(data);
-	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
+	initBillList(billList.value, value);
 	show.value = false;
 };
 
 
-// const initBillList = (data: any) => {
-// 	const formatData = getFormatBillList(data);
-// 	curMountData.value = formatData.getBillDataList().billList;;
-// 	curMountTotalPrice.value = getCurMountTotalPrice(data);
-// 	statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
-// 	return { columns: formatData.columns, metaData: formatData.metaData }
-// }
 
-onLoad(() => {
+onShow(() => {
 	(async () => {
+		console.log("===")
 		height.value = `${winHW().height - 160}px`;
-		console.log(height.value);
+		const data = initBillList((await getBillList() || []))
+		columns.value = data?.columns;
+		billList.value = data.metaData;
 
-		const formatData = getFormatBillList((await getBillList() || []));
-		columns.value = formatData?.columns;
-		const data = formatData.getBillDataList().billList;
-		statisticsGoodsNumList.value = getStatisticsGoodsNumList(data);
-
-		curMountData.value = data;
-
-		billList.value = formatData.metaData;
-		curMountTotalPrice.value = getCurMountTotalPrice(data);
 	})();
 });
 </script>
