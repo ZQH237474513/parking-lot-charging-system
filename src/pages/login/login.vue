@@ -21,6 +21,7 @@ import { onBeforeMount, ref, reactive } from 'vue';
 import { useApplicationStore } from '@stores';
 import { getCurrentInstanceParams } from '@utils';
 import { onLoad } from '@dcloudio/uni-app';
+import moment from 'moment';
 
 const localforage = getCurrentInstanceParams('localforage');
 
