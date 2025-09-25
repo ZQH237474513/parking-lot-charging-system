@@ -66,8 +66,7 @@ const submit = async () => {
 		if (String(target.password) === String(password)) {
 			await localforage.setItem('userInfo', {
 				...target,
-				time: '2025年09月18日 03:00:10'
-				// time: moment().format("YYYY年MM月DD日 HH:mm:ss"),
+				time: moment().format("YYYY年MM月DD日 HH:mm:ss"),
 			});
 			uni.switchTab({
 				url: `../home/home`
